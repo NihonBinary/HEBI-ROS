@@ -194,13 +194,13 @@ add_dependencies(example_moveit_node hebiros_generate_messages_cpp)
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(hebiros_node ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(hebiros_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 
-target_link_libraries(example_01_lookup_node ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
-target_link_libraries(example_02_feedback_node ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
-target_link_libraries(example_03_command_node ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
-target_link_libraries(example_gazebo_node ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
-target_link_libraries(example_moveit_node ${catkin_LIBRARIES} ${CMAKE_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(example_01_lookup_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(example_02_feedback_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(example_03_command_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(example_gazebo_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(example_moveit_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 
 #############
 ## Install ##
