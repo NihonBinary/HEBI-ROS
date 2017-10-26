@@ -170,6 +170,7 @@ add_executable(example_01_lookup_node src/example_01_lookup_node.cpp)
 add_executable(example_02_feedback_node src/example_02_feedback_node.cpp)
 add_executable(example_03_command_node src/example_03_command_node.cpp)
 add_executable(example_04_command_node_5dof src/example_04_command_node_5dof.cpp)
+add_executable(example_05_command_node_5dof_teleop src/example_05_command_node_5dof_teleop.cpp)
 add_executable(example_gazebo_node src/example_gazebo_node.cpp)
 add_executable(example_moveit_node src/example_moveit_node.cpp)
 
@@ -178,6 +179,7 @@ add_dependencies(example_01_lookup_node hebiros_generate_messages_cpp)
 add_dependencies(example_02_feedback_node hebiros_generate_messages_cpp)
 add_dependencies(example_03_command_node hebiros_generate_messages_cpp)
 add_dependencies(example_04_command_node_5dof hebiros_generate_messages_cpp)
+add_dependencies(example_05_command_node_5dof_teleop hebiros_generate_messages_cpp)
 add_dependencies(example_gazebo_node hebiros_generate_messages_cpp)
 add_dependencies(example_moveit_node hebiros_generate_messages_cpp)
 
@@ -202,6 +204,7 @@ target_link_libraries(example_01_lookup_node ${catkin_LIBRARIES} ${PROJECT_SOURC
 target_link_libraries(example_02_feedback_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 target_link_libraries(example_03_command_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 target_link_libraries(example_04_command_node_5dof ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
+target_link_libraries(example_05_command_node_5dof_teleop ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 target_link_libraries(example_gazebo_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 target_link_libraries(example_moveit_node ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/linux_x86_64/libhebi.so)
 
