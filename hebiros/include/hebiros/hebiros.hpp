@@ -68,6 +68,7 @@ class Hebiros_Node {
     std::map<std::string, GroupInfo*> group_infos;
     std::map<std::string, std::map<std::string, int>> group_joints;
     std::map<std::string, sensor_msgs::JointState> group_joint_states;
+    std::map<std::string, sensor_msgs::JointState> group_gravity_comp;  //  For Gravity Compensation during Trajectory Execution
     std::map<std::string, sensor_msgs::JointState> gazebo_joint_states;
     std::mutex gazebo_joint_states_mutex;
 
@@ -119,6 +120,10 @@ class Hebiros_Node {
       std::string group_name);
 
     void sub_joint_command(const boost::shared_ptr<sensor_msgs::JointState const> data,
+      std::string group_name);
+
+    // Potal for Gravity Compensation during Trajectory Execution
+    void sub_gravity_comp_cmd(const boost::shared_ptr<sensor_msgs::JointState const> data,
       std::string group_name);
 
     void sub_publish_group_gazebo(
