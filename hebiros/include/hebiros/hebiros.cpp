@@ -250,6 +250,18 @@ void Hebiros_Node::sub_command(const boost::shared_ptr<sensor_msgs::JointState c
       if (i < data->effort.size()) {
         effort(joint_index) = data->effort[i];
       }
+      // // For Gravity Compensation during Trajectory Execution
+      // if (i < group_gravity_comp[group_name].effort.size())
+      // {
+      //   if(std::isnan(effort(joint_index)))
+      //   {
+      //     effort(joint_index) = group_gravity_comp[group_name].effort[i];
+      //   }
+      //   else
+      //   {
+      //     effort(joint_index) += group_gravity_comp[group_name].effort[i];
+      //   }
+      // }
     }
     else {
       ROS_WARN("Unable to find joint: %s.  Command not sent.", data->name[i].c_str());
@@ -262,6 +274,15 @@ void Hebiros_Node::sub_command(const boost::shared_ptr<sensor_msgs::JointState c
   group->sendCommand(group_command);
 }
 
+// Potal for Gravity Compensation during Trajectory Execution
+void Hebiros_Node::sub_gravity_comp_cmd(const boost::shared_ptr<sensor_msgs::JointState const> data,
+  std::string group_name)
+{
+  // std::cout << "Hebiros_Node::sub_gravity_comp_cmd()" << std::endl;
+  // std::cout << "group_name = " << group_name << std::endl;
+  // std::cout << "data->effort.size() = " << data->effort.size() << std::endl;
+  group_gravity_comp[group_name] = *data;
+}
 
 //Subscriber callback which publishes feedback topics for a group in gazebo
 void Hebiros_Node::sub_publish_group_gazebo(const boost::shared_ptr<sensor_msgs::JointState const>
@@ -411,6 +432,8 @@ void Hebiros_Node::action_trajectory(const TrajectoryGoalConstPtr& goal, std::st
   previous_time = ros::Time::now().toSec();
   for (double t = 0; t < trajectory_duration; t += loop_duration)
   {
+    std::cout << "trajectory t=" << t << std::endl;
+
     if (action_server->isPreemptRequested() || !ros::ok()) {
       ROS_INFO("Group [%s]: Preempted trajectory", group_name.c_str());
       action_server->setPreempted();
@@ -425,6 +448,7 @@ void Hebiros_Node::action_trajectory(const TrajectoryGoalConstPtr& goal, std::st
     command_msg.name.resize(num_joints);
     command_msg.position.resize(num_joints);
     command_msg.velocity.resize(num_joints);
+    command_msg.effort.resize(num_joints);
 
     for (int i = 0; i < num_joints; i++) {
       std::string joint_name = goal->waypoints[0].names[i];
@@ -432,7 +456,26 @@ void Hebiros_Node::action_trajectory(const TrajectoryGoalConstPtr& goal, std::st
       command_msg.name[joint_index] = joint_name;
       command_msg.position[joint_index] = position_command(i);
       command_msg.velocity[joint_index] = velocity_command(i);
+
+      // For Gravity Compensation during Trajectory Execution 
+      // std::cout << "i=" << i << std::endl;
+      // std::cout << "joint_index=" << joint_index << std::endl;
+      // std::cout << "group_name=" << group_name << std::endl;
+      // std::cout << "expression=" << (group_gravity_comp.find(group_name) != group_gravity_comp.end()) << std::endl;
+      // std::cout << "effort.size()=" << group_gravity_comp[group_name].effort.size() << std::endl;
+
+      if(group_gravity_comp.find(group_name) != group_gravity_comp.end() 
+        && group_gravity_comp[group_name].effort.size() > joint_index)
+      {
+        command_msg.effort[joint_index] = group_gravity_comp[group_name].effort[joint_index];
+      }
+      else
+      {
+        // std::cout << "gravity compensation is disabled" << std::endl;
+        command_msg.effort[joint_index] = std::numeric_limits<double>::quiet_NaN();
+      }
     }
+
     publishers["/hebiros/"+group_name+"/command/joint_state"].publish(command_msg);
 
     ros::spinOnce();
@@ -464,6 +507,11 @@ void Hebiros_Node::register_group(std::string group_name) {
   subscribers["/hebiros/"+group_name+"/command/joint_state"] = 
     n.subscribe<sensor_msgs::JointState>("/hebiros/"+group_name+"/command/joint_state", 100,
     boost::bind(&Hebiros_Node::sub_command, this, _1, group_name));
+
+  // Potal for Gravity Compensation during Trajectory Execution
+  subscribers["/hebiros/"+group_name+"/command/gravity_comp"] = 
+    n.subscribe<sensor_msgs::JointState>("/hebiros/"+group_name+"/command/gravity_comp", 100, 
+    boost::bind(&Hebiros_Node::sub_gravity_comp_cmd, this, _1, group_name));
 
   services["/hebiros/"+group_name+"/size"] =
     n.advertiseService<SizeSrv::Request, SizeSrv::Response>("/hebiros/"+group_name+"/size",
