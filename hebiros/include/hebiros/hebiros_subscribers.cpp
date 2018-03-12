@@ -116,4 +116,11 @@ void Hebiros_Node::sub_publish_group_gazebo(const boost::shared_ptr<sensor_msgs:
   gazebo_joint_states.erase(group_name);
 }
 
-
+// Potal for Gravity Compensation during Trajectory Execution
+void Hebiros_Node::sub_gravity_comp_cmd(const boost::shared_ptr<sensor_msgs::JointState const> data, std::string group_name)
+{
+  // std::cout << "Hebiros_Node::sub_gravity_comp_cmd()" << std::endl;
+  // std::cout << "group_name = " << group_name << std::endl;
+  // std::cout << "data->effort.size() = " << data->effort.size() << std::endl;
+  group_gravity_comp[group_name] = *data;
+}

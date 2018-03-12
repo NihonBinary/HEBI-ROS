@@ -69,6 +69,7 @@ void Hebiros_Node::action_trajectory(const TrajectoryGoalConstPtr& goal, std::st
     command_msg.name.resize(num_joints);
     command_msg.position.resize(num_joints);
     command_msg.velocity.resize(num_joints);
+    command_msg.effort.resize(num_joints);
 
     for (int i = 0; i < num_joints; i++) {
       std::string joint_name = goal->waypoints[0].names[i];
@@ -76,6 +77,18 @@ void Hebiros_Node::action_trajectory(const TrajectoryGoalConstPtr& goal, std::st
       command_msg.name[joint_index] = joint_name;
       command_msg.position[joint_index] = position_command(i);
       command_msg.velocity[joint_index] = velocity_command(i);
+
+      // For Gravity Compensation during Trajectory Execution
+      if(group_gravity_comp.find(group_name) != group_gravity_comp.end() 
+        && group_gravity_comp[group_name].effort.size() > joint_index)
+      {
+        command_msg.effort[joint_index] = group_gravity_comp[group_name].effort[joint_index];
+      }
+      else
+      {
+        // std::cout << "gravity compensation is disabled" << std::endl;
+        command_msg.effort[joint_index] = std::numeric_limits<double>::quiet_NaN();
+      }
     }
     publishers["/hebiros/"+group_name+"/command/joint_state"].publish(command_msg);
 

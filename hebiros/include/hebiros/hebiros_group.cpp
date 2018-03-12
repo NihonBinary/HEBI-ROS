@@ -22,6 +22,11 @@ void Hebiros_Node::register_group(std::string group_name) {
     n.subscribe<sensor_msgs::JointState>("/hebiros/"+group_name+"/command/joint_state", 100,
     boost::bind(&Hebiros_Node::sub_joint_command, this, _1, group_name));
 
+  // Potal for Gravity Compensation during Trajectory Execution
+  subscribers["/hebiros/"+group_name+"/command/gravity_comp"] = 
+    n.subscribe<sensor_msgs::JointState>("/hebiros/"+group_name+"/command/gravity_comp", 100, 
+    boost::bind(&Hebiros_Node::sub_gravity_comp_cmd, this, _1, group_name));
+
   services["/hebiros/"+group_name+"/size"] =
     n.advertiseService<SizeSrv::Request, SizeSrv::Response>("/hebiros/"+group_name+"/size",
     boost::bind(&Hebiros_Node::srv_size, this, _1, _2, group_name));
